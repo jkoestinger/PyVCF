@@ -313,13 +313,14 @@ class Reader(object):
             setattr(self, attr, OrderedDict())
 
         parser = _vcf_metadata_parser()
+        
+        line = next(self.reader)
 
         try:
             line = line.decode(self.encoding)
         except AttributeError:
             pass
 
-        line = next(self.reader)
         while line.startswith('##'):
             self._header_lines.append(line)
 
