@@ -297,9 +297,9 @@ class Reader(object):
         self._column_headers = []
         self._tabix = None
         self._prepend_chr = prepend_chr
+        self.encoding = encoding
         self._parse_metainfo()
         self._format_cache = {}
-        self.encoding = encoding
 
     def __iter__(self):
         return self
@@ -313,6 +313,11 @@ class Reader(object):
             setattr(self, attr, OrderedDict())
 
         parser = _vcf_metadata_parser()
+
+        try:
+            line = line.decode(self.encoding)
+        except AttributeError:
+            pass
 
         line = next(self.reader)
         while line.startswith('##'):
@@ -347,7 +352,10 @@ class Reader(object):
                         self.metadata[key] = []
                     self.metadata[key].append(val)
 
-            line = next(self.reader)
+            try:
+                line = line.decode(self.encoding)
+            except AttributeError:
+                pass
 
         fields = self._row_pattern.split(line[1:])
         self._column_headers = fields[:9]
@@ -551,6 +559,12 @@ class Reader(object):
     def next(self):
         '''Return the next record in the file.'''
         line = next(self.reader)
+
+        try:
+            line = line.decode(self.encoding)
+        except AttributeError:
+            pass
+
         row = self._row_pattern.split(line.rstrip())
         chrom = row[0]
         if self._prepend_chr:
