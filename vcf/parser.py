@@ -313,7 +313,7 @@ class Reader(object):
             setattr(self, attr, OrderedDict())
 
         parser = _vcf_metadata_parser()
-        
+
         line = next(self.reader)
 
         try:
@@ -353,6 +353,7 @@ class Reader(object):
                         self.metadata[key] = []
                     self.metadata[key].append(val)
 
+            line = next(self.reader)
             try:
                 line = line.decode(self.encoding)
             except AttributeError:
